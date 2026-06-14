@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Gamepad
+Comment=Gamepad Tester
+KeywordKeywords=gamepad;joystick;game;
+Exec=/opt/gamepad/gamepad %u
+Icon=/opt/gamepad/gamepad.svg
+Terminal=false
+Categories=Game;Utility;
+StartupNotify=true
