@@ -140,14 +140,14 @@ impl GamepadApp {
         };
 
         let tabs = row![
-            button("Controle")
+            button("Control")
                 .on_press(Message::SetViewMode(ViewMode::Controller))
                 .style(if self.view_mode == ViewMode::Controller {
                     button::primary
                 } else {
                     button::secondary
                 }),
-            button("Calibração")
+            button("Calibration")
                 .on_press(Message::SetViewMode(ViewMode::Calibration))
                 .style(if self.view_mode == ViewMode::Calibration {
                     button::primary

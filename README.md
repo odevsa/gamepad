@@ -4,10 +4,11 @@
 
 Desktop application for monitoring and testing gamepads/controllers. Provides a list of connected devices, live visualization of axes and buttons, and calibration tools.
 
+![Screenshot](screenshot.png)
+
 ## Requirements
 
 - Rust (stable) and `cargo`
-- Linux (desktop)
 
 ## Building
 
@@ -31,22 +32,14 @@ Run in development with `cargo run`:
 cargo run
 ```
 
-Or run the produced binary directly:
-
-```bash
-target/debug/gamepad
-# or
-target/release/gamepad
-```
-
 ## Install icon and desktop entry
 
-This repository includes `assets/icons/gamepad.svg` and `gamepad.desktop` at the project root. To install the icon and desktop entry for the current user:
+This repository includes `assets/gamepad.png` and `assets/gamepad.desktop` at the project root. To install the icon and desktop entry for the current user:
 
 ```bash
 mkdir -p ~/.local/share/icons/hicolor/256x256/apps
-cp assets/icons/gamepad.svg ~/.local/share/icons/hicolor/256x256/apps/gamepad.svg
-cp gamepad.desktop ~/.local/share/applications/
+cp assets/gamepad.png ~/.local/share/icons/hicolor/256x256/apps/gamepad.png
+cp assets/gamepad.desktop ~/.local/share/applications/
 update-desktop-database ~/.local/share/applications/ || true
 ```
 
@@ -61,7 +54,3 @@ Note: you can edit `gamepad.desktop` to adjust the `Exec=` path (for example `/u
 ## Contributing
 
 Contributions are welcome — please open issues or pull requests. Keep code consistent with project conventions and add tests when applicable.
-
-## License
-
-See `Cargo.toml` for project license information.

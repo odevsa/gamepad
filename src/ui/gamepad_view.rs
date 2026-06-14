@@ -61,18 +61,18 @@ fn draw_controller(frame: &mut Frame, theme: &Theme, size: Size, state: &Gamepad
     let pt = |vx: f32, vy: f32| Point::new(ox + vx * scale, oy + vy * scale);
 
     // Grips (behind body)
-    fill_rrect(frame, pt(70.0, 235.0), sc(145.0), sc(155.0), sc(40.0), p.grip);
-    fill_rrect(frame, pt(485.0, 235.0), sc(145.0), sc(155.0), sc(40.0), p.grip);
+    fill_rrect(frame, pt(70.0, 275.0), sc(145.0), sc(155.0), sc(40.0), p.grip);
+    fill_rrect(frame, pt(485.0, 275.0), sc(145.0), sc(155.0), sc(40.0), p.grip);
 
     // Main body
-    fill_rrect(frame, pt(45.0, 80.0), sc(610.0), sc(210.0), sc(45.0), p.body);
+    fill_rrect(frame, pt(45.0, 80.0), sc(610.0), sc(250.0), sc(45.0), p.body);
 
     // Triggers (LT / RT)
     let lt_v = normalize_trigger(state.axis_value(Axis::LeftZ));
     let rt_v = normalize_trigger(state.axis_value(Axis::RightZ));
-    draw_trigger(frame, pt(55.0, 22.0), sc(140.0), sc(58.0), sc(16.0),
+    draw_trigger(frame, pt(72.0, 40.0), sc(145.0), sc(40.0), sc(11.0),
         lt_v, p.track, p.accent, p.label, "LT", scale);
-    draw_trigger(frame, pt(505.0, 22.0), sc(140.0), sc(58.0), sc(16.0),
+    draw_trigger(frame, pt(483.0, 40.0), sc(145.0), sc(40.0), sc(11.0),
         rt_v, p.track, p.accent, p.label, "RT", scale);
 
     // Bumpers (LB / RB)
@@ -86,8 +86,8 @@ fn draw_controller(frame: &mut Frame, theme: &Theme, size: Size, state: &Gamepad
     draw_label(frame, pt(555.0, 93.0), "RB", sc(11.0), p.label);
 
     // D-pad
-    let dcx = ox + 165.0 * scale;
-    let dcy = oy + 280.0 * scale;
+    let dcx = ox + 240.0 * scale;
+    let dcy = oy + 260.0 * scale;
     let aw = sc(29.0);
     let al = sc(40.0);
     let dr = sc(7.0);
@@ -108,7 +108,7 @@ fn draw_controller(frame: &mut Frame, theme: &Theme, size: Size, state: &Gamepad
         if dright { p.accent } else { p.idle });
 
     // Left analog stick
-    let ls_c = pt(242.0, 205.0);
+    let ls_c = pt(130.0, 180.0);
     let ls_r  = sc(50.0);
     draw_stick(frame, ls_c, ls_r, sc(20.0),
         state.axis_value(Axis::LeftStickX), state.axis_value(Axis::LeftStickY),
@@ -116,7 +116,7 @@ fn draw_controller(frame: &mut Frame, theme: &Theme, size: Size, state: &Gamepad
     draw_label(frame, Point::new(ls_c.x, ls_c.y + ls_r + sc(14.0)), "L3", sc(10.0), p.label);
 
     // Right analog stick
-    let rs_c = pt(448.0, 272.0);
+    let rs_c = pt(450.0, 250.0);
     let rs_r  = sc(50.0);
     draw_stick(frame, rs_c, rs_r, sc(20.0),
         state.axis_value(Axis::RightStickX), state.axis_value(Axis::RightStickY),
@@ -124,9 +124,9 @@ fn draw_controller(frame: &mut Frame, theme: &Theme, size: Size, state: &Gamepad
     draw_label(frame, Point::new(rs_c.x, rs_c.y + rs_r + sc(14.0)), "R3", sc(10.0), p.label);
 
     // Face buttons
-    let fc = pt(500.0, 195.0);
-    let br = sc(24.0);
-    let fs = sc(55.0);
+    let fc = pt(560.0, 195.0);
+    let br = sc(20.0);
+    let fs = sc(45.0);
 
     draw_face_button(frame, Point::new(fc.x, fc.y + fs), br,
         state.is_pressed(Button::South), p.face_a, "A", scale);
@@ -157,8 +157,9 @@ fn draw_trigger(
 ) {
     fill_rrect(frame, tl, w, h, r, track);
     if fill_ratio > 0.005 {
-        let fw = (w * fill_ratio).max(r * 2.0).min(w);
-        fill_rrect(frame, tl, fw, h, r, Color { a: 0.85, ..accent });
+        let fh = (h * fill_ratio).max(r * 2.0).min(h);
+        let tla = Point::new(tl.x, tl.y + h - fh);
+        fill_rrect(frame, tla, w, fh, r, Color { a: 0.85, ..accent });
     }
     draw_label(frame, Point::new(tl.x + w / 2.0, tl.y + h / 2.0), label, scale * 11.0, label_color);
 }
@@ -178,11 +179,12 @@ fn draw_stick(
         ..Default::default()
     });
 
+    // posição y precisa ser invetida
     let max_offset = well_r - dot_r;
     let dot = Path::circle(
         Point::new(
             center.x + ax.clamp(-1.0, 1.0) * max_offset,
-            center.y + ay.clamp(-1.0, 1.0) * max_offset,
+            center.y - ay.clamp(-1.0, 1.0) * max_offset,
         ),
         dot_r,
     );
