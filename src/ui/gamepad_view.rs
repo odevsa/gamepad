@@ -179,7 +179,6 @@ fn draw_stick(
         ..Default::default()
     });
 
-    // posição y precisa ser invetida
     let max_offset = well_r - dot_r;
     let dot = Path::circle(
         Point::new(
