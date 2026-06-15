@@ -4,7 +4,12 @@
 
 Desktop application for monitoring and testing gamepads/controllers. Provides a list of connected devices, live visualization of axes and buttons, and calibration tools.
 
-![Screenshot](screenshot.png)
+<table>
+  <tr>
+    <td><img src="screenshot-control.png" alt="Control"/></td>
+    <td><img src="screenshot-calibration.png" alt="Calibration"/></td>
+  </tr>
+</table>
 
 ## Requirements
 

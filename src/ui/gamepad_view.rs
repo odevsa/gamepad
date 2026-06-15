@@ -61,26 +61,36 @@ fn draw_controller(frame: &mut Frame, theme: &Theme, size: Size, state: &Gamepad
     let pt = |vx: f32, vy: f32| Point::new(ox + vx * scale, oy + vy * scale);
 
     // Grips (behind body)
-    fill_rrect(frame, pt(70.0, 275.0), sc(145.0), sc(155.0), sc(40.0), p.grip);
-    fill_rrect(frame, pt(485.0, 275.0), sc(145.0), sc(155.0), sc(40.0), p.grip);
+    fill_rrect(frame, pt(70.0, 275.0), sc(145.0), sc(155.0), sc(45.0), p.grip);
+    fill_rrect(frame, pt(485.0, 275.0), sc(145.0), sc(155.0), sc(45.0), p.grip);
 
     // Main body
     fill_rrect(frame, pt(45.0, 80.0), sc(610.0), sc(250.0), sc(45.0), p.body);
 
     // Triggers (LT / RT)
-    let lt_v = normalize_trigger(state.axis_value(Axis::LeftZ));
-    let rt_v = normalize_trigger(state.axis_value(Axis::RightZ));
-    draw_trigger(frame, pt(72.0, 40.0), sc(145.0), sc(40.0), sc(11.0),
+    let raw_lt = state.trigger_value(Axis::LeftZ);
+    let raw_rt = state.trigger_value(Axis::RightZ);
+    let lt_v = if raw_lt < -0.9 && state.is_pressed(Button::LeftTrigger2) {
+        1.0
+    } else {
+        normalize_trigger(raw_lt)
+    };
+    let rt_v = if raw_rt < -0.9 && state.is_pressed(Button::RightTrigger2) {
+        1.0
+    } else {
+        normalize_trigger(raw_rt)
+    };
+    draw_trigger(frame, pt(72.0, 40.0), sc(145.0), sc(40.0), sc(5.0),
         lt_v, p.track, p.accent, p.label, "LT", scale);
-    draw_trigger(frame, pt(483.0, 40.0), sc(145.0), sc(40.0), sc(11.0),
+    draw_trigger(frame, pt(483.0, 40.0), sc(145.0), sc(40.0), sc(5.0),
         rt_v, p.track, p.accent, p.label, "RT", scale);
 
     // Bumpers (LB / RB)
     let lb = state.is_pressed(Button::LeftTrigger);
     let rb = state.is_pressed(Button::RightTrigger);
-    fill_rrect(frame, pt(72.0, 78.0), sc(145.0), sc(30.0), sc(10.0),
+    fill_rrect(frame, pt(72.0, 78.0), sc(145.0), sc(30.0), sc(5.0),
         if lb { p.accent } else { p.bumper });
-    fill_rrect(frame, pt(483.0, 78.0), sc(145.0), sc(30.0), sc(10.0),
+    fill_rrect(frame, pt(483.0, 78.0), sc(145.0), sc(30.0), sc(5.0),
         if rb { p.accent } else { p.bumper });
     draw_label(frame, pt(144.0, 93.0), "LB", sc(11.0), p.label);
     draw_label(frame, pt(555.0, 93.0), "RB", sc(11.0), p.label);
@@ -157,7 +167,7 @@ fn draw_trigger(
 ) {
     fill_rrect(frame, tl, w, h, r, track);
     if fill_ratio > 0.005 {
-        let fh = (h * fill_ratio).max(r * 2.0).min(h);
+        let fh = h * fill_ratio;
         let tla = Point::new(tl.x, tl.y + h - fh);
         fill_rrect(frame, tla, w, fh, r, Color { a: 0.85, ..accent });
     }

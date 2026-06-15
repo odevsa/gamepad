@@ -42,6 +42,11 @@ impl GamepadState {
         self.axes.get(&axis).copied().unwrap_or(0.0)
     }
 
+    /// Returns the raw (uncalibrated) axis value in –1.0 … 1.0, defaulting to -1.0.
+    pub fn trigger_value(&self, axis: Axis) -> f32 {
+        self.axes.get(&axis).copied().unwrap_or(-1.0)
+    }
+
     /// Returns the calibrated axis value with center offset and dead zone applied.
     pub fn calibrated_axis(&self, axis: Axis) -> f32 {
         let raw = self.axis_value(axis);

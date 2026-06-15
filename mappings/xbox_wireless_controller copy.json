@@ -1,0 +1,16 @@
+{
+  "matcher": "Xbox Wireless Controller",
+  "axis_codes": {
+    "2": "RightStickX",
+    "5": "RightStickY",
+    "10": "LeftZ",
+    "9": "RightZ"
+  },
+  "invert_axes": {
+    "RightStickY": true
+  },
+  "button_names": {
+    "North": "West",
+    "West": "North"
+  }
+}

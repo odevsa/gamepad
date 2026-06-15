@@ -131,7 +131,7 @@ impl GamepadApp {
     fn view_content(&self) -> Element<'_, Message> {
         let Some(id) = self.selected else {
             return container(center_text(
-                "No gamepad detected.\nConnect a USB or Bluetooth controller\nto begin testing.",
+                "Connect a USB or Bluetooth device to start",
             ))
             .width(Length::Fill)
             .height(Length::Fill)
@@ -145,14 +145,14 @@ impl GamepadApp {
                 .style(if self.view_mode == ViewMode::Controller {
                     button::primary
                 } else {
-                    button::secondary
+                    button::text
                 }),
             button("Calibration")
                 .on_press(Message::SetViewMode(ViewMode::Calibration))
                 .style(if self.view_mode == ViewMode::Calibration {
                     button::primary
                 } else {
-                    button::secondary
+                    button::text
                 }),
         ]
         .spacing(6)

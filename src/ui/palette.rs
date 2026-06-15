@@ -75,10 +75,10 @@ impl ControllerPalette {
             // Accent — vivid blue, consistent across themes
             accent:    Color::from_rgb8(80,  160, 255),
             // Face buttons — conventional cross-platform colors
-            face_a:    Color::from_rgb8(0,   165, 75 ),  // green
-            face_b:    Color::from_rgb8(200, 30,  30 ),  // red
-            face_x:    Color::from_rgb8(30,  100, 220),  // blue
-            face_y:    Color::from_rgb8(210, 170, 0  ),  // yellow
+            face_a:    Color::from_rgb8(0,   165, 75 ),
+            face_b:    Color::from_rgb8(200, 30,  30 ),
+            face_x:    Color::from_rgb8(30,  100, 220),
+            face_y:    Color::from_rgb8(210, 170, 0  ),
         }
     }
 

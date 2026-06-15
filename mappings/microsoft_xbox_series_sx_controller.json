@@ -1,0 +1,7 @@
+{
+  "matcher": "Microsoft Xbox Series S|X Controller",
+  "button_names": {
+    "North": "West",
+    "West": "North"
+  }
+}

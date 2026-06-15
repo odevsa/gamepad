@@ -20,7 +20,7 @@ pub fn view<'a>(
     let items: Vec<Element<'a, Message>> = if devices.is_empty() {
         vec![
             container(
-                text("No gamepads detected.\nConnect a USB or Bluetooth\ndevice to start.")
+                text("No gamepads detected")
                     .size(13),
             )
             .padding([12, 16])
@@ -47,7 +47,7 @@ pub fn view<'a>(
                 .style(if is_selected {
                     button::primary
                 } else {
-                    button::secondary
+                    button::text
                 })
                 .on_press(Message::SelectDevice(Some(id)))
                 .into()
