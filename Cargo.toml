@@ -9,3 +9,10 @@ gilrs = "0.10"
 dark-light = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
+[package.metadata.deb]
+assets = [
+    ["target/release/gamepad", "usr/bin/gamepad", "755"],
+    ["assets/gamepad.desktop", "usr/share/applications/gamepad.desktop", "644"],
+    ["assets/gamepad.png", "usr/share/icons/hicolor/512x512/apps/gamepad.png", "644"],
+]

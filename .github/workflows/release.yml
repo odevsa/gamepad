@@ -1,0 +1,117 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+env:
+  APP_NAME: gamepad
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch_generic: x86_64
+            arch_deb: amd64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binutils xz-utils libfuse2
+          cargo install cargo-deb
+
+      - name: Setup target
+        run: rustup target add ${{ matrix.target }} || true
+
+      - name: Get Version
+        id: get_version
+        run: |
+          VERSION=$(grep '^version =' Cargo.toml | head -n1 | cut -d '"' -f 2)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Create Package Names
+        id: names
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          ARCH=${{ matrix.arch_generic }}
+          ARCH_DEB=${{ matrix.arch_deb }}
+          APP_NAME=${{ env.APP_NAME }}
+          echo "TAR_NAME=${APP_NAME}-${VERSION}-${ARCH}.tar.xz" >> $GITHUB_OUTPUT
+          echo "DEB_NAME=${APP_NAME}_${VERSION}_${ARCH_DEB}.deb" >> $GITHUB_OUTPUT
+          echo "APPIMAGE_NAME=${APP_NAME}-${VERSION}-${ARCH}.AppImage" >> $GITHUB_OUTPUT
+
+      - name: Package .tar.xz
+        run: |
+          APP_NAME=${{ env.APP_NAME }}
+          TMPDIR=/tmp/${APP_NAME}-${{ steps.get_version.outputs.VERSION }}
+          mkdir -p $TMPDIR
+
+          cp target/${{ matrix.target }}/release/${APP_NAME} $TMPDIR/
+          cp -r assets/* $TMPDIR/
+
+          # TAR tudo que tem dentro do $TMPDIR
+          tar -cJf ${{ steps.names.outputs.TAR_NAME }} -C $TMPDIR .
+
+          rm -rf $TMPDIR
+
+      - name: Package .deb
+        run: |
+          cargo deb --target ${{ matrix.target }} --no-build --output ${{ steps.names.outputs.DEB_NAME }}
+
+      - name: Package AppImage
+        run: |
+          APP_NAME=${{ env.APP_NAME }}
+          curl -LO https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/icons/hicolor/512x512/apps
+
+          cp target/${{ matrix.target }}/release/${APP_NAME} AppDir/usr/bin/
+          cp assets/${APP_NAME}.desktop AppDir/
+          cp assets/${APP_NAME}.png AppDir/usr/share/icons/hicolor/512x512/apps/
+          cp assets/${APP_NAME}.png AppDir/${APP_NAME}.png
+          ln -s usr/bin/${APP_NAME} AppDir/AppRun
+
+          ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool-x86_64.AppImage AppDir ${{ steps.names.outputs.APPIMAGE_NAME }}
+
+      - name: Upload Local Test
+        uses: actions/upload-artifact@v4
+        if: ${{ env.ACT == 'true' }}
+        with:
+          name: packages
+          path: |
+            ${{ env.APP_NAME }}*.tar.xz
+            ${{ env.APP_NAME }}*.deb
+            ${{ env.APP_NAME }}*.AppImage
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
+        with:
+          files: |
+            ${{ steps.names.outputs.TAR_NAME }}
+            ${{ steps.names.outputs.DEB_NAME }}
+            ${{ steps.names.outputs.APPIMAGE_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
